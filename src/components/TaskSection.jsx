@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 
-import Task from './task';
+import Task from "./Task";
+
 
 const TaskSection = ({title, tasks}) => {
-  console.log(tasks);
     return (
             <div className="section-container" style={{  minWidth: "450px",height: "95vh" }}>
               <div className="header" style={{ ...styleHeader, backgroundColor: "#F2F4F7", padding: '10px' }}>

@@ -9,62 +9,32 @@ import { PiChatsCircle } from "react-icons/pi";
 import { MdOutlineAttachFile } from "react-icons/md";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import AddTaskModal from "./AddTaskModal";
 
 const Task = ({name}) => {
-  const [fileInput, setFileInput] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+ const [isModalOpen, setModalOpen] = useState(false)
 
-  // console.log({name});
 
   
 
-  const handleFileInputChange = (e) => {
-    // setFileInput(e.target.files);
-    // Object.values(e.target.files).map(item => console.log(item))
-    const files = e.target.files;
-  const filesArray = Array.from(files);
-  setFileInput(filesArray);
-  };
+  
 
   const handleGetFiles = async () => {
     try {
+      // setUploadedFiles([])
       const response = await axios.get(`http://localhost:3000/files/${name}`, {
       });
 
       const files = response.data.files;
-      setUploadedFiles(files)
+      response ? setUploadedFiles(files) : setUploadedFiles([]);
     } catch (error) {
+      setUploadedFiles([]);
       console.error('Error fetching files:', error);
     }
   };
 
-  const handleUpload = async () => {
-    try {
-      if (!fileInput || fileInput.length === 0) {
-        return alert('Please select one or more files to upload.');
-      }
   
-      const formData = new FormData();
-  
-      fileInput.forEach((file) => {
-        formData.append('files', file); // Use the same field name 'files' here
-      });
-  
-      formData.append('task_name', name);
-  
-      await axios.post('http://localhost:3000/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-  
-      alert('Files uploaded successfully!');
-      handleGetFiles()
-    } catch (error) {
-      console.error('Error uploading files:', error);
-      alert('Error uploading files. Please try again.');
-    }
-  };
   
 
  
@@ -104,7 +74,7 @@ const Task = ({name}) => {
           <span>15</span>
           </div>
           <div>
-          <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-white" onClick={() => handleGetFiles()}><MdOutlineAttachFile /></button>
+          <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-white" onClick={() => setModalOpen(true)}><MdOutlineAttachFile /></button>
           <span>{uploadedFiles.length}</span>
           </div>
           <div>
@@ -113,33 +83,7 @@ const Task = ({name}) => {
           </div>
         </div>
         </div>
-        <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div className="modal-dialog">
-    <div className="modal-content">
-      <div className="modal-header">
-        <h1 className="modal-title fs-5" id="exampleModalLabel">Multiple files Upload</h1>
-        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div className="modal-body">
-      </div>
-      <div>
-        <label>
-          Upload File:
-          <input type="file" onChange={handleFileInputChange} multiple />
-        </label>
-      </div>
-      <div>
-      {uploadedFiles.map((file, index) => <div key={index}>{file.filename}</div>)}
-      </div>
-<div className="modal-footer">
-        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        
-        <button onClick={handleUpload}>Upload Files</button>
-     
-      </div>
-    </div>
-  </div>
-</div>
+        {isModalOpen && <AddTaskModal name={name} isModalOpen={isModalOpen} setModalOpen={setModalOpen} />}
       </div> 
 
 
